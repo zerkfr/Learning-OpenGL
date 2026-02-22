@@ -5,6 +5,6 @@
   </Configurations>
   <Project Path="../OpenGL_Shaders/OpenGL_Shaders.vcxproj" Id="99cf13db-e4dd-407c-9d33-e8db72403c47" />
   <Project Path="../OpenGL_Textures/OpenGL_Textures.vcxproj" Id="123d5b11-2db7-43bd-8aca-d4ab70ddb6d1" />
-  <Project Path="../OpenGL_Transformations/OpenGL_Transformations.vcxproj" Id="29a676c0-d76b-4dfa-94a0-ff1258bdc41d" />
+  <Project Path="../OpenGL_Transformations_Sierpiński_Triangle/OpenGL_Transformations.vcxproj" Id="29a676c0-d76b-4dfa-94a0-ff1258bdc41d" />
   <Project Path="OpenGL Intro.vcxproj" Id="aa1db65d-8628-4a11-aa05-e8440de1d7ad" />
 </Solution>

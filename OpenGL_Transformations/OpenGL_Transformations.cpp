@@ -161,12 +161,13 @@ int main()
 
         // ------ TRI ONE ---------
         glm::mat4 trans = glm::mat4(1.0f);
-        //trans = glm::translate(trans, glm::vec3(sin(glfwGetTime()) / 2.0f, cos(glfwGetTime()) / 2.0f, 1.0));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0, 1.0, 1.0));
+
+        // trans = glm::translate(trans, glm::vec3(sin(glfwGetTime()) / 2.0f, cos(glfwGetTime()) / 2.0f, 1.0));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 1.0, 1.0));
 
         unsigned int transformLoc = glGetUniformLocation(Shader.ID, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
+        
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, allVertices.size() * sizeof(float), &allVertices[0], GL_STATIC_DRAW);

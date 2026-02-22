@@ -24,6 +24,7 @@
     <ProjectGuid>{29a676c0-d76b-4dfa-94a0-ff1258bdc41d}</ProjectGuid>
     <RootNamespace>OpenGLTransformations</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>OpenGL_Transformations_Sierpiński_Triangle</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

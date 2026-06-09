@@ -70,7 +70,7 @@ public:
         return glm::perspective(glm::radians(fov), WIDTH / HEIGHT, near, far);
     }
 
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+    void ProcessMouseMovement(float xoffset, float yoffset)
     {
         xoffset *= mouseSensitivity;
         yoffset *= mouseSensitivity;
@@ -127,6 +127,10 @@ public:
         front = glm::normalize(direction);
     }
 
+    glm::vec3 getPosition()
+    {
+        return position;
+    }
 };
 
 

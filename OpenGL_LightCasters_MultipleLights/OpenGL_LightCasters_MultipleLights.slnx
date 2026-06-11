@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="OpenGL_LightCasters_MultipleLights.vcxproj" Id="dc40d754-e9fd-402a-9fc3-684b8f409e85" />
+</Solution>

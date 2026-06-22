@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="3D_Lava_Platformer.vcxproj" Id="6a9ea7dc-d620-4a82-b1c1-7e386e7bcf63" />
+</Solution>

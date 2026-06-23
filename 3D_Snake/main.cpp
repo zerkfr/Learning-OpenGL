@@ -31,7 +31,6 @@ float lastY = WIDTH / 2;
 bool firstMouse = true;
 bool shiftPressed = false;
 
-
 // snake
 enum Direction
 {
@@ -45,11 +44,12 @@ float snakeSpeedCounter = 15.0f;
 glm::vec3 previousHeadPos;
 glm::vec3 snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 int currentFoodAmount = 0;
+int startingFoodAmount = 5;
 glm::vec3 snakeColor = glm::vec3(0.0f, 1.0f, 0.0f);
+bool firstPressed = false;
 
-
-
-const int platformLength = 10;
+const int platformLength = 16;
+const int halfPlatformLength = 8;
 const int totalCells = platformLength * platformLength;
 int grid[platformLength][platformLength] = { 0 };
 
@@ -107,29 +107,29 @@ float vertices[] =
     -1.5f,  1.5f, -1.5f,
 
     // Platform Face
-    -10.0f,  0.0f, -10.0f,
-     10.0f,  0.0f, -10.0f,
-     10.0f,  0.0f,  10.0f,
-     10.0f,  0.0f,  10.0f,
-    -10.0f,  0.0f,  10.0f,
-    -10.0f,  0.0f, -10.0f,
+    float(-halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5),
+     float(halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5),
+     float(halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5),
+     float(halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5),
 
     // platform bottom
-    -10.0f,  -1.5f, -10.0f,
-     10.0f,  -1.5f, -10.0f,
-     10.0f,  -1.5f,  10.0f,
-     10.0f,  -1.5f,  10.0f,
-    -10.0f,  -1.5f,  10.0f,
-    -10.0f,  -1.5f, -10.0f,
+    float(-halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5),
+     float(halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5),
+     float(halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5),
+     float(halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5),
 
     // x - green
     // platform front
-    -10.0f, -1.5f, 10.0f, 
-     10.0f, -1.5f, 10.0f, 
-     10.0f,  0.0f, 10.0f, 
-     10.0f,  0.0f, 10.0f,
-    -10.0f,  0.0f, 10.0f,
-    -10.0f, -1.5f, 10.0f 
+    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 
+     float(halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 
+     float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 
+     float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5)
 };
 
 
@@ -140,12 +140,9 @@ glm::vec3 defaultFoodLocations[] =
 
     glm::vec3(1.0f, 0.5f, 0.0f),
     glm::vec3(-3.0f, 0.5f, -1.0f),
-    glm::vec3(-5.0f, 0.5f, 1.0f),
+    glm::vec3(-4.0f, 0.5f, 1.0f),
     glm::vec3(-3.0f, 0.5f, -3.0f),
     glm::vec3(2.0f, 0.5f, 1.0f),
-    glm::vec3(-2.0f, 0.5f, 7.0f),
-    glm::vec3(-7.0f, 0.5f, 2.0f),
-    glm::vec3(5.0f, 0.5f, -8.0f),
 
 };
 
@@ -167,7 +164,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Platformer I Think", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Snake", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -201,12 +198,12 @@ int main()
     glEnableVertexAttribArray(0);
 
     // setup shaders
-    Shader platformShader("defaultShader.vs", "defaultShader.fs");
+    Shader platformShader("floorShader.vs", "floorShader.fs");
     Shader foodShader("foodShader.vs", "foodShader.fs");
     Shader snakeShader("snakeShader.vs", "snakeShader.fs");
 
     // set camera starting position and direction
-    camera.setPosition(glm::vec3(0.0f, 18.466f, 13.211f));
+    camera.setPosition(glm::vec3(0.0f, 16.466f, 11.211f));
     camera.setFront(glm::vec3(0.0f, -0.862f, -0.508f));
 
     // set default head pos
@@ -218,15 +215,15 @@ int main()
     previousHeadPos = snakePos[0];
 
     // set default food spawns
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < startingFoodAmount; i++)
     {
         glm::vec3 location = defaultFoodLocations[i];
         updateFoodSpaceAdd(location, i);
     }
 
-    for (int i = 0; i < platformLength; i++)
+    for (int i = 0; i < halfPlatformLength; i++)
     {
-        for (int k = 0; k < platformLength; k++)
+        for (int k = 0; k < halfPlatformLength; k++)
         {
             std::cout << grid[i][k] << " ";
         }
@@ -333,8 +330,8 @@ int main()
 
         }
         
-        
-        if (snakeSpeedCounter <= 0.0f)
+        // snake move 
+        if (snakeSpeedCounter <= 0.0f && firstPressed)
         {
             updateSnakePos();
             snakePos[0] += snakeDirection;
@@ -342,8 +339,8 @@ int main()
         }
         snakeSpeedCounter -= 1.0f;
 
-        snakePos[0].x = glm::clamp(snakePos[0].x,  (-10.0f + 0.5f), (10.0f - 0.5f));
-        snakePos[0].z = glm::clamp(snakePos[0].z, (-10.0f + 0.5f), (10.0f - 0.5f));
+        snakePos[0].x = glm::clamp(snakePos[0].x,  (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
+        snakePos[0].z = glm::clamp(snakePos[0].z, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
 
         snakeShader.setVec3("pos", snakePos[0]);
 
@@ -405,39 +402,53 @@ void checkFoodCollision()
 
 void updateFoodSpaceRemove(glm::vec3 location, int index)
 {
-    int xCell = location.x;
-    int zCell = location.z;
+    int xCell = location.x + halfPlatformLength;
+    int zCell = location.z + halfPlatformLength;
+
 
     grid[xCell][zCell] = 0;
+
+    //std::cout << "REMOVING FOOD GRID CELL (X, Z) : (" << xCell-platformLength / 2 << ", " << zCell-platformLength / 2 << ")\n";
 
     foodLocations[index] = foodLocations.back();
     foodLocations.pop_back();
     updateFoodSpaceAdd(generateRandFoodSpawn(), 0);
 
     currentFoodAmount--;
-    printGrid();
+    //printGrid();
 
 }
 
 void updateFoodSpaceAdd(glm::vec3 location, int index)
 {
-    int xCell = location.x;
-    int zCell = location.z;
+    int xCell = location.x + halfPlatformLength;
+    int zCell = location.z + halfPlatformLength;
 
     grid[xCell][zCell] = 1;
 
     foodLocations.push_back(location);
     currentFoodAmount++;
 
-    printGrid();
 }
+
+glm::vec3 generateRandFoodSpawn()
+{
+    // while the generated spawn location is not occupied by a snake or another food --------------- TO BE DONE 
+    int randomX = glm::linearRand(-halfPlatformLength + 1, halfPlatformLength);
+    int randomZ = glm::linearRand(-halfPlatformLength + 1, halfPlatformLength);
+
+    glm::vec3 spawnLoc = glm::vec3(randomX, 0.5f, randomZ);
+    // std::cout << "SPAWNED FOOD AT (X, Z) = (" << randomX << ", " << randomZ << ")\n";
+    return spawnLoc;
+}
+
 
 // help me see the gridddddddddd
 void printGrid()
 {
-    for (int i = 0; i < platformLength; i++)
+    for (int i = 0; i < halfPlatformLength; i++)
     {
-        for (int k = 0; k < platformLength; k++)
+        for (int k = 0; k < halfPlatformLength; k++)
         {
             std::cout << grid[i][k] << " ";
         }
@@ -454,16 +465,6 @@ void updateSnakePos()
     {
         snakePos[i] = snakePos[i - 1];
     } 
-}
-
-glm::vec3 generateRandFoodSpawn()
-{
-    // while the generated spawn location is not occupied by a snake or another food --------------- TO BE DONE 
-    int randomX = glm::linearRand(-10, 10);
-    int randomZ = glm::linearRand(-10, 10);
-
-    glm::vec3 spawnLoc = glm::vec3(randomX, 0.5f, randomZ);
-    return spawnLoc;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -484,24 +485,32 @@ void processInput(GLFWwindow* window)
     {
         snakeDirection = glm::vec3(0.0f, 0.0f, -1.0f);
         snakeDir = SNAKE_UP;
+
+        if (firstPressed == false) firstPressed = true; 
     }
 
     if ((glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) && snakeDir != SNAKE_UP)
     {
         snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
         snakeDir = SNAKE_DOWN;
+
+        if (firstPressed == false) firstPressed = true;
     }  
 
     if ((glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) && snakeDir != SNAKE_RIGHT)
     {
         snakeDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
         snakeDir = SNAKE_LEFT;
+
+        if (firstPressed == false) firstPressed = true;
     }
  
     if ((glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) && snakeDir != SNAKE_LEFT)
     {
         snakeDirection = glm::vec3(1.0f, 0.0f, 0.0f);
         snakeDir = SNAKE_RIGHT;
+
+        if (firstPressed == false) firstPressed = true;
     }
 
     if (shiftPressed)

@@ -37,8 +37,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultShader.vs" />
-    <None Include="defaultShader.fs" />
+    <None Include="floorShader.vs" />
+    <None Include="floorShader.fs" />
     <None Include="foodShader.fs" />
     <None Include="foodShader.vs" />
     <None Include="snakeShader.fs" />

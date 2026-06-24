@@ -30,6 +30,7 @@ float lastX = WIDTH / 2;
 float lastY = WIDTH / 2;
 bool firstMouse = true;
 bool shiftPressed = false;
+bool gameOver = false;
 
 // snake
 enum Direction
@@ -203,8 +204,8 @@ int main()
     Shader snakeShader("snakeShader.vs", "snakeShader.fs");
 
     // set camera starting position and direction
-    camera.setPosition(glm::vec3(0.0f, 16.466f, 11.211f));
-    camera.setFront(glm::vec3(0.0f, -0.862f, -0.508f));
+    camera.setPosition(glm::vec3(0.0f, 16.828f, 10.0104));
+    camera.setFront(glm::vec3(0.0f, -0.904827f, -0.42578f));
 
     // set default head pos
     snakePos.push_back(glm::vec3(0.0f, 0.2f, 0.0f));
@@ -274,6 +275,7 @@ int main()
                   << "Front Z: " << camera.getFront().z << "\n";
         */
 
+
         //std::cout << "CURRENT FOOD AMOUNT: " << currentFoodAmount << "\n";
         //std::cout << std::endl << std::endl;
         checkFoodCollision();
@@ -305,10 +307,13 @@ int main()
         foodShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
 
         // drawing foods
+        float rotation = glm::radians(glfwGetTime() * 4.0f);
+
         for (int i = 0; i < currentFoodAmount; i++)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, foodLocations[i]);
+            model = glm::rotate(model, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.13));
             foodShader.setMat4("model", model);
 
@@ -331,18 +336,30 @@ int main()
         }
         
         // snake move 
-        if (snakeSpeedCounter <= 0.0f && firstPressed)
+        if (gameOver == false)
         {
-            updateSnakePos();
-            snakePos[0] += snakeDirection;
-            snakeSpeedCounter = 15.0f;
+            if (snakeSpeedCounter <= 0.0f && firstPressed)
+            {
+
+                for (int i = 1; i < numSnakeParts; i++)
+                {
+                    if ((snakePos[0] + snakeDirection) == snakePos[i])
+                    {
+                        gameOver = true;
+                    }
+                }
+
+                updateSnakePos();
+                snakePos[0] += snakeDirection;
+                snakeSpeedCounter = 15.0f;
+            }
+            snakeSpeedCounter -= 1.0f;
+
+            snakePos[0].x = glm::clamp(snakePos[0].x, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
+            snakePos[0].z = glm::clamp(snakePos[0].z, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
+
+            snakeShader.setVec3("pos", snakePos[0]);
         }
-        snakeSpeedCounter -= 1.0f;
-
-        snakePos[0].x = glm::clamp(snakePos[0].x,  (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
-        snakePos[0].z = glm::clamp(snakePos[0].z, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
-
-        snakeShader.setVec3("pos", snakePos[0]);
 
         /*
         

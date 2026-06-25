@@ -16,6 +16,7 @@ void updateSnakePos();
 void updateFoodSpaceAdd(glm::vec3 location, int index);
 void updateFoodSpaceRemove(glm::vec3 location, int index);
 void checkFoodCollision();
+bool checkWallCollision();
 void printGrid();
 glm::vec3 generateRandFoodSpawn();
 
@@ -275,6 +276,8 @@ int main()
                   << "Front Z: " << camera.getFront().z << "\n";
         */
 
+        //std::cout << "X: " << snakePos[0].x + snakeDirection.x << "\t";
+        //std::cout << "Z: " << snakePos[0].z + snakeDirection.z << std::endl;
 
         //std::cout << "CURRENT FOOD AMOUNT: " << currentFoodAmount << "\n";
         //std::cout << std::endl << std::endl;
@@ -291,6 +294,15 @@ int main()
         snakeShader.setMat4("projection", projection);
         snakeShader.setMat4("view", view);
         snakeShader.setVec3("color", snakeColor);
+
+        glm::vec3 deadColor = glm::vec3(1.0f, 0.0f, 0.0f) * glm::vec3(glm::sin(glfwGetTime()));
+        if (gameOver)
+        {
+            snakeShader.setBool("dead", true);
+            snakeShader.setVec3("deadColor", deadColor);
+        }
+        else
+            snakeShader.setBool("dead", false);
         
         glBindVertexArray(VAO);
 
@@ -334,12 +346,17 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
         }
-        
+
         // snake move 
         if (gameOver == false)
         {
             if (snakeSpeedCounter <= 0.0f && firstPressed)
             {
+
+                if (checkWallCollision())
+                {
+                    gameOver = true;
+                }
 
                 for (int i = 1; i < numSnakeParts; i++)
                 {
@@ -400,6 +417,17 @@ int main()
     return 0;
 }
 
+bool checkWallCollision()
+{
+    if ((snakePos[0].x + snakeDirection.x) < (-halfPlatformLength + 1)) return true;
+    if ((snakePos[0].x + snakeDirection.x) > halfPlatformLength)        return true;
+
+    if ((snakePos[0].z + snakeDirection.z) < (-halfPlatformLength + 1)) return true;
+    if ((snakePos[0].z + snakeDirection.z) > halfPlatformLength)        return true;
+
+    return false;
+}
+
 void checkFoodCollision()
 {
     // if the head of the snake enters a food cell
@@ -427,7 +455,7 @@ void updateFoodSpaceRemove(glm::vec3 location, int index)
 
     //std::cout << "REMOVING FOOD GRID CELL (X, Z) : (" << xCell-platformLength / 2 << ", " << zCell-platformLength / 2 << ")\n";
 
-    foodLocations[index] = foodLocations.back();
+    foodLocations[index] = foodLocations.back(); 
     foodLocations.pop_back();
     updateFoodSpaceAdd(generateRandFoodSpawn(), 0);
 

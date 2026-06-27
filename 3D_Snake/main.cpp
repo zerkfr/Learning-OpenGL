@@ -41,6 +41,9 @@ enum Direction
     SNAKE_UP,
     SNAKE_DOWN
 };
+glm::vec3 getDirectionVectorFromInputBuffer(std::vector<Direction> buffer, int index);
+
+
 Direction snakeDir = SNAKE_DOWN;
 float snakeSpeedCounter = 15.0f;
 glm::vec3 previousHeadPos;
@@ -49,6 +52,10 @@ int currentFoodAmount = 0;
 int startingFoodAmount = 5;
 glm::vec3 snakeColor = glm::vec3(0.0f, 1.0f, 0.0f);
 bool firstPressed = false;
+bool moveActive = false;
+std::vector<Direction> inputBuffer;
+
+static bool movedRight, movedLeft, movedUp, movedDown = false;
 
 const int platformLength = 16;
 const int halfPlatformLength = 8;
@@ -223,6 +230,7 @@ int main()
         updateFoodSpaceAdd(location, i);
     }
 
+    /*
     for (int i = 0; i < halfPlatformLength; i++)
     {
         for (int k = 0; k < halfPlatformLength; k++)
@@ -234,6 +242,8 @@ int main()
     }
 
     std::cout << std::endl;
+
+    */
 
     // -------- MAIN RENDER FUNCTION ---------
 	while (!glfwWindowShouldClose(window))
@@ -254,33 +264,27 @@ int main()
         glm::mat4 view = camera.getViewMatrix();
         
         /*
-        for (int i = 0; i < 1; i++)
+        for (Direction dir : inputBuffer)
         {
-            std::cout << "Snake X: " << snakePos[i].x << "\t"
-                      << "Snake Y: " << snakePos[i].y << "\t"
-                      << "Snake Z: " << snakePos[i].z << "\n";
+            switch (dir)
+            {
+            case 0:
+                std::cout << "LEFT ";
+                break;
+            case 1:
+                std::cout << "RIGHT ";
+                break;
+            case 2:
+                std::cout << "UP ";
+                break;
+            case 3:
+                std::cout << "DOWN ";
+                break;
+            }
         }
-        for (int i = 0; i < currentFoodAmount; i++)
-        {
-            std::cout << "Food X: " << foodLocations[i].x << "\t"
-                      << "Food Y: " << foodLocations[i].y << "\t"
-                      << "Food Z: " <<   foodLocations[i].z << "\n";
-        }
-        
-        std::cout << "Player X: " << camera.getPosition().x << "\t"
-                  << "Player Y: " << camera.getPosition().y << "\t"
-                  << "Player Z: " << camera.getPosition().z << "\n";
-
-        std::cout << "Front X: " << camera.getFront().x << "\t"
-                  << "Front Y: " << camera.getFront().y << "\t"
-                  << "Front Z: " << camera.getFront().z << "\n";
+        std::cout << std::endl;
         */
 
-        //std::cout << "X: " << snakePos[0].x + snakeDirection.x << "\t";
-        //std::cout << "Z: " << snakePos[0].z + snakeDirection.z << std::endl;
-
-        //std::cout << "CURRENT FOOD AMOUNT: " << currentFoodAmount << "\n";
-        //std::cout << std::endl << std::endl;
         checkFoodCollision();
 
         // send needed camera matrices to our shader
@@ -356,18 +360,34 @@ int main()
                 if (checkWallCollision())
                 {
                     gameOver = true;
+                    std::cout << "You hit a wall\n";
                 }
 
-                for (int i = 1; i < numSnakeParts; i++)
+                for (int i = 4; i < numSnakeParts; i++) // start at 4, because you can't hit the first 3 parts of yourself
                 {
                     if ((snakePos[0] + snakeDirection) == snakePos[i])
                     {
                         gameOver = true;
+                        std::cout << "You hit yourself\n";
+                        std::cout << "HEAD AT (" << snakePos[0].x + snakeDirection.x << ", " << snakePos[0].z + snakeDirection.z << ")\n";
+                        std::cout << "HIT PART AT INDEX: " << i << " -- (" << snakePos[i].x << ", " << snakePos[i].z << ")\n\n";
                     }
                 }
 
                 updateSnakePos();
-                snakePos[0] += snakeDirection;
+
+                // if the inputBuffer is not empty, add the direction from the first movement index in the buffer
+                if (!inputBuffer.empty())
+                {
+                    glm::vec3 snakeBufferDirection = getDirectionVectorFromInputBuffer(inputBuffer, 0);
+                    snakePos[0] += snakeBufferDirection;
+                    inputBuffer.erase(inputBuffer.begin());
+                }
+                else // otherwise just use the stored location from the input function
+                {
+                    snakePos[0] += snakeDirection;
+                }
+
                 snakeSpeedCounter = 15.0f;
             }
             snakeSpeedCounter -= 1.0f;
@@ -378,36 +398,6 @@ int main()
             snakeShader.setVec3("pos", snakePos[0]);
         }
 
-        /*
-        
-        // drawing z axis to visualize
-        foodShader.use();
-
-        for (int i = 0; i < 10; i++)
-        {
-            foodShader.setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, float(i)));
-            model = glm::scale(model, glm::vec3(0.06));
-            foodShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        // drawing x axis to visualize
-        for (int i = 0; i < 10; i++)
-        {
-            foodShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.1f));
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(float(i), 0.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(0.06));
-            foodShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        */
-
         glfwSwapBuffers(window);
         glfwPollEvents();
 
@@ -415,6 +405,27 @@ int main()
 
     glfwTerminate();
     return 0;
+}
+
+glm::vec3 getDirectionVectorFromInputBuffer(std::vector<Direction> buffer, int index)
+{
+
+    switch (buffer[index])
+    {
+        case SNAKE_UP:
+            return glm::vec3(0.0f, 0.0f, -1.0f);
+            break;
+        case SNAKE_DOWN:
+            return glm::vec3(0.0f, 0.0f, 1.0f);
+            break;
+        case SNAKE_LEFT:
+            return glm::vec3(-1.0f, 0.0f, 0.0f);
+            break;
+        case SNAKE_RIGHT:
+            return glm::vec3(1.0f, 0.0f, 0.0f);
+            break;
+    }
+
 }
 
 bool checkWallCollision()
@@ -487,7 +498,6 @@ glm::vec3 generateRandFoodSpawn()
     return spawnLoc;
 }
 
-
 // help me see the gridddddddddd
 void printGrid()
 {
@@ -526,36 +536,94 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         shiftPressed = true;
 
+    // player movement controls 
+    // MOVE SNAKE UP
     if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) && snakeDir != SNAKE_DOWN)
     {
-        snakeDirection = glm::vec3(0.0f, 0.0f, -1.0f);
-        snakeDir = SNAKE_UP;
+
+        if (movedUp == false)
+        {
+            movedUp = !movedUp;
+            snakeDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+
+            if (snakeDir != SNAKE_UP)
+            {
+                snakeDir = SNAKE_UP;
+                inputBuffer.push_back(snakeDir);               
+            }
+        }
 
         if (firstPressed == false) firstPressed = true; 
     }
+    else
+    {
+        movedUp = false;
+    }
 
+    // MOVE SNAKE DOWN
     if ((glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) && snakeDir != SNAKE_UP)
     {
-        snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
-        snakeDir = SNAKE_DOWN;
+        if (!movedDown)
+        {
+            movedDown = !movedDown;
+            snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 
-        if (firstPressed == false) firstPressed = true;
-    }  
+            if (snakeDir != SNAKE_DOWN)
+            {
+                snakeDir = SNAKE_DOWN;
+                inputBuffer.push_back(snakeDir);
+            }
 
+            if (firstPressed == false) firstPressed = true;
+        }
+    }
+    else
+    {
+        movedDown = false;
+    }
+
+    // MOVE SNAKE LEFT
     if ((glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) && snakeDir != SNAKE_RIGHT)
     {
-        snakeDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
-        snakeDir = SNAKE_LEFT;
+        if (movedLeft == false)
+        {
+            movedLeft = !movedLeft;
+            snakeDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 
-        if (firstPressed == false) firstPressed = true;
+            if (snakeDir != SNAKE_LEFT)
+            {
+                snakeDir = SNAKE_LEFT;
+                inputBuffer.push_back(snakeDir);
+            }
+
+            if (firstPressed == false) firstPressed = true;
+        }
     }
- 
+    else
+    {
+        movedLeft = false;
+    }
+
+    // MOVE SNAKE RIGHT
     if ((glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) && snakeDir != SNAKE_LEFT)
     {
-        snakeDirection = glm::vec3(1.0f, 0.0f, 0.0f);
-        snakeDir = SNAKE_RIGHT;
+        if (!movedRight)
+        {
+            movedRight = !movedRight;
+            snakeDirection = glm::vec3(1.0f, 0.0f, 0.0f);
 
-        if (firstPressed == false) firstPressed = true;
+            if (snakeDir != SNAKE_RIGHT)
+            {
+                snakeDir = SNAKE_RIGHT;
+                inputBuffer.push_back(snakeDir);
+            }
+
+            if (firstPressed == false) firstPressed = true;
+        }
+    }
+    else
+    {
+        movedRight = false;
     }
 
     if (shiftPressed)

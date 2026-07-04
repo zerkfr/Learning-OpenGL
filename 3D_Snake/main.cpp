@@ -68,77 +68,77 @@ Camera camera;
 float vertices[] =
 {
     // Front face
-    - 1.5f, -1.5f, -1.5f,
-     1.5f, -1.5f, -1.5f,
-     1.5f,  1.5f, -1.5f,
-     1.5f,  1.5f, -1.5f,
-    -1.5f,  1.5f, -1.5f,
-    -1.5f, -1.5f, -1.5f,
+    -1.5f, -1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
+     1.5f, -1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
+     1.5f,  1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
+     1.5f,  1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
+    -1.5f,  1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
+    -1.5f, -1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
 
     // Back face
-    -1.5f, -1.5f,  1.5f,
-     1.5f, -1.5f,  1.5f,
-     1.5f,  1.5f,  1.5f,
-     1.5f,  1.5f,  1.5f,
-    -1.5f,  1.5f,  1.5f,
-    -1.5f, -1.5f,  1.5f,
+    -1.5f, -1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
+     1.5f, -1.5f,  1.5f, 0.0f, 0.0f, -1.0f, 
+     1.5f,  1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
+     1.5f,  1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
+    -1.5f,  1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
+    -1.5f, -1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
 
     // Left face
-    -1.5f,  1.5f,  1.5f,
-    -1.5f,  1.5f, -1.5f,
-    -1.5f, -1.5f, -1.5f,
-    -1.5f, -1.5f, -1.5f,
-    -1.5f, -1.5f,  1.5f,
-    -1.5f,  1.5f,  1.5f,
+    -1.5f,  1.5f,  1.5f, -1.0f, 0.0f, 0.0f,
+    -1.5f,  1.5f, -1.5f, -1.0f, 0.0f, 0.0f,
+    -1.5f, -1.5f, -1.5f, -1.0f, 0.0f, 0.0f,
+    -1.5f, -1.5f, -1.5f, -1.0f, 0.0f, 0.0f,
+    -1.5f, -1.5f,  1.5f, -1.0f, 0.0f, 0.0f,
+    -1.5f,  1.5f,  1.5f, -1.0f, 0.0f, 0.0f,
 
     // Right face
-     1.5f,  1.5f,  1.5f,
-     1.5f,  1.5f, -1.5f,
-     1.5f, -1.5f, -1.5f,
-     1.5f, -1.5f, -1.5f,
-     1.5f, -1.5f,  1.5f,
-     1.5f,  1.5f,  1.5f,
+     1.5f,  1.5f,  1.5f, 1.0f, 0.0f, 0.0f,
+     1.5f,  1.5f, -1.5f, 1.0f, 0.0f, 0.0f,
+     1.5f, -1.5f, -1.5f, 1.0f, 0.0f, 0.0f,
+     1.5f, -1.5f, -1.5f, 1.0f, 0.0f, 0.0f,
+     1.5f, -1.5f,  1.5f, 1.0f, 0.0f, 0.0f,
+     1.5f,  1.5f,  1.5f, 1.0f, 0.0f, 0.0f,
 
     // Bottom face
-    -1.5f, -1.5f, -1.5f,
-     1.5f, -1.5f, -1.5f,
-     1.5f, -1.5f,  1.5f,
-     1.5f, -1.5f,  1.5f,
-    -1.5f, -1.5f,  1.5f,
-    -1.5f, -1.5f, -1.5f,
+    -1.5f, -1.5f, -1.5f, 0.0f, -1.0f, 0.0f,
+     1.5f, -1.5f, -1.5f, 0.0f, -1.0f, 0.0f,
+     1.5f, -1.5f,  1.5f, 0.0f, -1.0f, 0.0f,
+     1.5f, -1.5f,  1.5f, 0.0f, -1.0f, 0.0f,
+    -1.5f, -1.5f,  1.5f, 0.0f, -1.0f, 0.0f,
+    -1.5f, -1.5f, -1.5f, 0.0f, -1.0f, 0.0f,
 
     // Top face
-    -1.5f,  1.5f, -1.5f,
-     1.5f,  1.5f, -1.5f,
-     1.5f,  1.5f,  1.5f,
-     1.5f,  1.5f,  1.5f,
-    -1.5f,  1.5f,  1.5f,
-    -1.5f,  1.5f, -1.5f,
+    -1.5f,  1.5f, -1.5f, 0.0f, 1.0f, 0.0f,
+     1.5f,  1.5f, -1.5f, 0.0f, 1.0f, 0.0f,
+     1.5f,  1.5f,  1.5f, 0.0f, 1.0f, 0.0f,
+     1.5f,  1.5f,  1.5f, 0.0f, 1.0f, 0.0f,
+    -1.5f,  1.5f,  1.5f, 0.0f, 1.0f, 0.0f,
+    -1.5f,  1.5f, -1.5f, 0.0f, 1.0f, 0.0f,
 
-    // Platform Face
-    float(-halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5),
-     float(halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5),
-     float(halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5),
-     float(halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5),
-    float(-halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5),
-    float(-halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5),
+    // Platform Top
+    float(-halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5), 0.0f, 1.0f, 0.0f,
+     float(halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5), 0.0f, 1.0f, 0.0f,
+     float(halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5), 0.0f, 1.0f, 0.0f,
+     float(halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5), 0.0f, 1.0f, 0.0f,
+    float(-halfPlatformLength + 0.5),  0.0f,  float(halfPlatformLength + 0.5), 0.0f, 1.0f, 0.0f,
+    float(-halfPlatformLength + 0.5),  0.0f, float(-halfPlatformLength + 0.5), 0.0f, 1.0f, 0.0f,
 
     // platform bottom
-    float(-halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5),
-     float(halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5),
-     float(halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5),
-     float(halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5),
-    float(-halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5),
-    float(-halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5),
+    float(-halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5), 0.0f, -1.0f, 0.0f,
+     float(halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5), 0.0f, -1.0f, 0.0f,
+     float(halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5), 0.0f, -1.0f, 0.0f,
+     float(halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5), 0.0f, -1.0f, 0.0f,
+    float(-halfPlatformLength + 0.5),  -1.5f,  float(halfPlatformLength + 0.5), 0.0f, -1.0f, 0.0f, 
+    float(-halfPlatformLength + 0.5),  -1.5f, float(-halfPlatformLength + 0.5), 0.0f, -1.0f, 0.0f,
 
     // x - green
     // platform front
-    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 
-     float(halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 
-     float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 
-     float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5),
-    float(-halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5),
-    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5)
+    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
+    float(halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
+    float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
+    float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
+    float(-halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
+    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f
 };
 
 
@@ -157,8 +157,11 @@ glm::vec3 defaultFoodLocations[] =
 
 std::vector<glm::vec3> foodLocations;
 std::vector<glm::vec3> snakePos;
+glm::vec3 floorColor = glm::vec3(0.12f, 0.0f, 0.12f);
+glm::vec3 foodColor = glm::vec3(1.0f, 0.0f, 0.0f);
+glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 0.0f);
 
-int numSnakeParts = 5;
+int numSnakeParts = 4;
 
 int main()
 {
@@ -203,8 +206,13 @@ int main()
     glBindVertexArray(VAO);
 
     // define vertex attributes
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // normals
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)3);
+    glEnableVertexAttribArray(1);
 
     // setup shaders
     Shader platformShader("floorShader.vs", "floorShader.fs");
@@ -220,7 +228,6 @@ int main()
     snakePos.push_back(glm::vec3(0.0f, 0.2f, -1.0f));
     snakePos.push_back(glm::vec3(0.0f, 0.2f, -2.0f));
     snakePos.push_back(glm::vec3(0.0f, 0.2f, -3.0f));
-    snakePos.push_back(glm::vec3(0.0f, 0.2f, -4.0f));
     previousHeadPos = snakePos[0];
 
     // set default food spawns
@@ -291,15 +298,21 @@ int main()
         platformShader.use();
         platformShader.setMat4("projection", projection);
         platformShader.setMat4("view", view);
+        platformShader.setVec3("color", floorColor);
+
         foodShader.use();
         foodShader.setMat4("projection", projection);
         foodShader.setMat4("view", view);
+        foodShader.setVec3("lightPos", lightPos);
+        foodShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        foodShader.setVec3("color", foodColor);
+
         snakeShader.use();
         snakeShader.setMat4("projection", projection);
         snakeShader.setMat4("view", view);
         snakeShader.setVec3("color", snakeColor);
 
-        glm::vec3 deadColor = glm::vec3(1.0f, 0.0f, 0.0f) * glm::vec3(glm::sin(glfwGetTime()));
+        glm::vec3 deadColor = glm::vec3(0.8f, 0.0f, 0.8f) * glm::vec3(glm::sin(glfwGetTime()));
         if (gameOver)
         {
             snakeShader.setBool("dead", true);
@@ -316,7 +329,6 @@ int main()
         model = glm::scale(model, glm::vec3(1.0f));
         model = glm::translate(model, platformLocation);
         platformShader.setMat4("model", model);
-        platformShader.setVec3("color", glm::vec3(0.0f, 0.0f, 0.12f));
         glDrawArrays(GL_TRIANGLES, 36, 18);
 
         foodShader.use();
@@ -332,9 +344,16 @@ int main()
             model = glm::rotate(model, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.13));
             foodShader.setMat4("model", model);
-
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        // draw light for testing
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.1f));
+        foodShader.setMat4("model", model);
+        foodShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // drawing snake 
         snakeShader.use();
@@ -346,7 +365,6 @@ int main()
             model = glm::translate(model, snakePos[i]);
             model = glm::scale(model, glm::vec3(float(1) / float(3)));
             snakeShader.setMat4("model", model);
-            snakeShader.setVec3("color", snakeColor);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
         }

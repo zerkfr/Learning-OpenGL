@@ -16,7 +16,6 @@ void main()
 	normal = mat3(transpose(inverse(model))) * aNormal;
 	fragPos = vec3(model * vec4(aPos, 1.0)); // outputs frag position in world coordinates
 
-
 	gl_Position = projection * view * model * vec4(aPos, 1.0);
 
 }

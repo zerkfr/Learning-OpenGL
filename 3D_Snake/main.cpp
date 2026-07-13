@@ -68,20 +68,20 @@ Camera camera;
 float vertices[] =
 {
     // Front face
-    -1.5f, -1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
-     1.5f, -1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
-     1.5f,  1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
-     1.5f,  1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
-    -1.5f,  1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
-    -1.5f, -1.5f, -1.5f, 0.0f, 0.0f, 1.0f,
+    -1.5f, -1.5f, -1.5f, 0.0f, 0.0f, -1.0f,
+     1.5f, -1.5f, -1.5f, 0.0f, 0.0f, -1.0f,
+     1.5f,  1.5f, -1.5f, 0.0f, 0.0f, -1.0f,
+     1.5f,  1.5f, -1.5f, 0.0f, 0.0f, -1.0f,
+    -1.5f,  1.5f, -1.5f, 0.0f, 0.0f, -1.0f,
+    -1.5f, -1.5f, -1.5f, 0.0f, 0.0f, -1.0f,
 
     // Back face
-    -1.5f, -1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
-     1.5f, -1.5f,  1.5f, 0.0f, 0.0f, -1.0f, 
-     1.5f,  1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
-     1.5f,  1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
-    -1.5f,  1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
-    -1.5f, -1.5f,  1.5f, 0.0f, 0.0f, -1.0f,
+    -1.5f, -1.5f,  1.5f, 0.0f, 0.0f, 1.0f,
+     1.5f, -1.5f,  1.5f, 0.0f, 0.0f, 1.0f, 
+     1.5f,  1.5f,  1.5f, 0.0f, 0.0f, 1.0f,
+     1.5f,  1.5f,  1.5f, 0.0f, 0.0f, 1.0f,
+    -1.5f,  1.5f,  1.5f, 0.0f, 0.0f, 1.0f,
+    -1.5f, -1.5f,  1.5f, 0.0f, 0.0f, 1.0f,
 
     // Left face
     -1.5f,  1.5f,  1.5f, -1.0f, 0.0f, 0.0f,
@@ -133,12 +133,12 @@ float vertices[] =
 
     // x - green
     // platform front
-    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
-    float(halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
-    float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
-    float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
-    float(-halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f,
-    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, 1.0f
+    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, -1.0f,
+    float(halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, -1.0f,
+    float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, -1.0f,
+    float(halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, -1.0f,
+    float(-halfPlatformLength + 0.5),  0.0f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, -1.0f,
+    float(-halfPlatformLength + 0.5), -1.5f, float(halfPlatformLength + 0.5), 0.0f, 0.0f, -1.0f
 };
 
 
@@ -211,7 +211,7 @@ int main()
     glEnableVertexAttribArray(0);
 
     // normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)3);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     // setup shaders
@@ -269,6 +269,8 @@ int main()
         // matrices for current frame
         glm::mat4 projection = camera.getProjMatrix(float(WIDTH), float(HEIGHT), 0.1f, 100.0f);
         glm::mat4 view = camera.getViewMatrix();
+        // lightPos = snakePos[0] + glm::vec3(0.0f, 0.5f, 0.0f);
+        lightPos = glm::vec3(0.0f, 5.0f, 0.0f);
         
         /*
         for (Direction dir : inputBuffer)
@@ -299,18 +301,22 @@ int main()
         platformShader.setMat4("projection", projection);
         platformShader.setMat4("view", view);
         platformShader.setVec3("color", floorColor);
+        platformShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        platformShader.setVec3("lightPos", lightPos);
 
         foodShader.use();
         foodShader.setMat4("projection", projection);
         foodShader.setMat4("view", view);
-        foodShader.setVec3("lightPos", lightPos);
-        foodShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         foodShader.setVec3("color", foodColor);
+        foodShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        foodShader.setVec3("lightPos", lightPos); 
 
         snakeShader.use();
         snakeShader.setMat4("projection", projection);
         snakeShader.setMat4("view", view);
         snakeShader.setVec3("color", snakeColor);
+        snakeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        snakeShader.setVec3("lightPos", lightPos);
 
         glm::vec3 deadColor = glm::vec3(0.8f, 0.0f, 0.8f) * glm::vec3(glm::sin(glfwGetTime()));
         if (gameOver)
@@ -344,18 +350,18 @@ int main()
             model = glm::rotate(model, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.13));
             foodShader.setMat4("model", model);
-            foodShader.setVec3("lightPos", snakePos[0]);
+            foodShader.setVec3("lightPos", lightPos);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
         // draw light for testing
         model = glm::mat4(1.0f);
-        //model = glm::translate(model, lightPos);
-        model = glm::translate(model, snakePos[0] + glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.1f));
+        model = glm::translate(model, lightPos);
+        // model = glm::translate(model, snakePos[0] + glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.05f));
         foodShader.setMat4("model", model);
         foodShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
-        foodShader.setVec3("lightPos", snakePos[0]);
+        foodShader.setVec3("lightPos", lightPos);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // drawing snake 
@@ -396,23 +402,11 @@ int main()
                 }
 
                 updateSnakePos();
-
-                // if the inputBuffer is not empty, add the direction from the first movement index in the buffer
-                if (!inputBuffer.empty())
-                {
-                    glm::vec3 snakeBufferDirection = getDirectionVectorFromInputBuffer(inputBuffer, 0);
-                    snakePos[0] += snakeBufferDirection;
-                    inputBuffer.erase(inputBuffer.begin());
-                }
-                else // otherwise just use the stored location from the input function
-                {
-                    snakePos[0] += snakeDirection;
-                }
-
-                snakeSpeedCounter = 15.0f;
+                snakeSpeedCounter = 15.0f; // controls how fast the snake moves
             }
             snakeSpeedCounter -= 1.0f;
 
+            // clamp snake to edge of plat
             snakePos[0].x = glm::clamp(snakePos[0].x, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
             snakePos[0].z = glm::clamp(snakePos[0].z, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
 
@@ -541,6 +535,18 @@ void updateSnakePos()
     {
         snakePos[i] = snakePos[i - 1];
     } 
+
+    // if the inputBuffer is not empty, add the direction from the first movement index in the buffer
+    if (!inputBuffer.empty())
+    {
+        glm::vec3 snakeBufferDirection = getDirectionVectorFromInputBuffer(inputBuffer, 0);
+        snakePos[0] += snakeBufferDirection;
+        inputBuffer.erase(inputBuffer.begin());
+    }
+    else // otherwise just use the stored location from the input function
+    {
+        snakePos[0] += snakeDirection;
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

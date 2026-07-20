@@ -45,14 +45,14 @@ glm::vec3 getDirectionVectorFromInputBuffer(std::vector<Direction> buffer, int i
 
 
 Direction snakeDir = SNAKE_DOWN;
-float snakeSpeedCounter = 15.0f;
+const float snakeSpeed = 10.0f; // the lower, the faster
+float snakeSpeedCounter = snakeSpeed;
 glm::vec3 previousHeadPos;
 glm::vec3 snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 int currentFoodAmount = 0;
 int startingFoodAmount = 5;
 glm::vec3 snakeColor = glm::vec3(0.0f, 1.0f, 0.0f);
 bool firstPressed = false;
-bool moveActive = false;
 std::vector<Direction> inputBuffer;
 
 static bool movedRight, movedLeft, movedUp, movedDown = false;
@@ -269,7 +269,7 @@ int main()
         // matrices for current frame
         glm::mat4 projection = camera.getProjMatrix(float(WIDTH), float(HEIGHT), 0.1f, 100.0f);
         glm::mat4 view = camera.getViewMatrix();
-        // lightPos = snakePos[0] + glm::vec3(0.0f, 0.5f, 0.0f);
+        // lightPos = snakePos[0] + glm::vec3(0.0f, 2.0f, 0.0f);
         lightPos = glm::vec3(0.0f, 5.0f, 0.0f);
         
         /*
@@ -303,6 +303,7 @@ int main()
         platformShader.setVec3("color", floorColor);
         platformShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         platformShader.setVec3("lightPos", lightPos);
+        platformShader.setVec3("viewPos", camera.getPosition());
 
         foodShader.use();
         foodShader.setMat4("projection", projection);
@@ -310,6 +311,7 @@ int main()
         foodShader.setVec3("color", foodColor);
         foodShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         foodShader.setVec3("lightPos", lightPos); 
+        foodShader.setVec3("viewPos", camera.getPosition());
 
         snakeShader.use();
         snakeShader.setMat4("projection", projection);
@@ -317,6 +319,7 @@ int main()
         snakeShader.setVec3("color", snakeColor);
         snakeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         snakeShader.setVec3("lightPos", lightPos);
+        snakeShader.setVec3("viewPos", camera.getPosition());
 
         glm::vec3 deadColor = glm::vec3(0.8f, 0.0f, 0.8f) * glm::vec3(glm::sin(glfwGetTime()));
         if (gameOver)
@@ -390,7 +393,7 @@ int main()
                     std::cout << "You hit a wall\n";
                 }
 
-                for (int i = 4; i < numSnakeParts; i++) // start at 4, because you can't hit the first 3 parts of yourself
+                for (int i = 3; i < numSnakeParts; i++) // start at 4, because you can't hit the first 3 parts of yourself
                 {
                     if ((snakePos[0] + snakeDirection) == snakePos[i])
                     {
@@ -402,11 +405,11 @@ int main()
                 }
 
                 updateSnakePos();
-                snakeSpeedCounter = 15.0f; // controls how fast the snake moves
+                snakeSpeedCounter = snakeSpeed; // controls how fast the snake moves
             }
             snakeSpeedCounter -= 1.0f;
 
-            // clamp snake to edge of plat
+            // clamp snake to edge of platform
             snakePos[0].x = glm::clamp(snakePos[0].x, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
             snakePos[0].z = glm::clamp(snakePos[0].z, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
 
@@ -475,7 +478,6 @@ void updateFoodSpaceRemove(glm::vec3 location, int index)
 {
     int xCell = location.x + halfPlatformLength;
     int zCell = location.z + halfPlatformLength;
-
 
     grid[xCell][zCell] = 0;
 
@@ -565,7 +567,7 @@ void processInput(GLFWwindow* window)
 
     // player movement controls 
     // MOVE SNAKE UP
-    if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) && snakeDir != SNAKE_DOWN)
+    if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) && snakeDir != SNAKE_DOWN && firstPressed)
     {
 
         if (movedUp == false)
@@ -573,7 +575,7 @@ void processInput(GLFWwindow* window)
             movedUp = !movedUp;
             snakeDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 
-            if (snakeDir != SNAKE_UP)
+            if (snakeDir != SNAKE_UP && inputBuffer.size() < 2)
             {
                 snakeDir = SNAKE_UP;
                 inputBuffer.push_back(snakeDir);               
@@ -595,7 +597,7 @@ void processInput(GLFWwindow* window)
             movedDown = !movedDown;
             snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 
-            if (snakeDir != SNAKE_DOWN)
+            if (snakeDir != SNAKE_DOWN && inputBuffer.size() < 2)
             {
                 snakeDir = SNAKE_DOWN;
                 inputBuffer.push_back(snakeDir);
@@ -617,7 +619,7 @@ void processInput(GLFWwindow* window)
             movedLeft = !movedLeft;
             snakeDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 
-            if (snakeDir != SNAKE_LEFT)
+            if (snakeDir != SNAKE_LEFT && inputBuffer.size() < 2)
             {
                 snakeDir = SNAKE_LEFT;
                 inputBuffer.push_back(snakeDir);
@@ -639,7 +641,7 @@ void processInput(GLFWwindow* window)
             movedRight = !movedRight;
             snakeDirection = glm::vec3(1.0f, 0.0f, 0.0f);
 
-            if (snakeDir != SNAKE_RIGHT)
+            if (snakeDir != SNAKE_RIGHT && inputBuffer.size() < 2)
             {
                 snakeDir = SNAKE_RIGHT;
                 inputBuffer.push_back(snakeDir);
@@ -651,6 +653,41 @@ void processInput(GLFWwindow* window)
     else
     {
         movedRight = false;
+    }
+
+    // game restart if pressed R
+    if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS))
+    {
+        if (gameOver == true)
+        {
+            // clear current vectors
+            snakePos.clear();
+            inputBuffer.clear();
+            foodLocations.clear();
+
+            // reset variables
+            currentFoodAmount = 0;
+            numSnakeParts = 4;
+            firstPressed = false;
+            firstMouse = true;
+            snakeDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+
+            // set default head pos
+            snakePos.push_back(glm::vec3(0.0f, 0.2f, 0.0f));
+            snakePos.push_back(glm::vec3(0.0f, 0.2f, -1.0f));
+            snakePos.push_back(glm::vec3(0.0f, 0.2f, -2.0f));
+            snakePos.push_back(glm::vec3(0.0f, 0.2f, -3.0f));
+            previousHeadPos = snakePos[0];
+
+            // set default food spawns
+            for (int i = 0; i < startingFoodAmount; i++)
+            {
+                glm::vec3 location = defaultFoodLocations[i];
+                updateFoodSpaceAdd(location, i);
+            }
+
+            gameOver = false;
+         }
     }
 
     if (shiftPressed)

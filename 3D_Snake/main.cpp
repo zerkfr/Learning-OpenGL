@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "stb_image.h"
 #include "Camera.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -214,10 +213,8 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // setup shaders
-    Shader platformShader("floorShader.vs", "floorShader.fs");
-    Shader foodShader("foodShader.vs", "foodShader.fs");
-    Shader snakeShader("snakeShader.vs", "snakeShader.fs");
+    // setup shader
+    Shader defaultShader("defaultShader.vs", "defaultShader.fs");
 
     // set camera starting position and direction
     camera.setPosition(glm::vec3(0.0f, 16.828f, 10.0104));
@@ -297,54 +294,36 @@ int main()
         checkFoodCollision();
 
         // send needed camera matrices to our shader
-        platformShader.use();
-        platformShader.setMat4("projection", projection);
-        platformShader.setMat4("view", view);
-        platformShader.setVec3("color", floorColor);
-        platformShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        platformShader.setVec3("lightPos", lightPos);
-        platformShader.setVec3("viewPos", camera.getPosition());
-
-        foodShader.use();
-        foodShader.setMat4("projection", projection);
-        foodShader.setMat4("view", view);
-        foodShader.setVec3("color", foodColor);
-        foodShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        foodShader.setVec3("lightPos", lightPos); 
-        foodShader.setVec3("viewPos", camera.getPosition());
-
-        snakeShader.use();
-        snakeShader.setMat4("projection", projection);
-        snakeShader.setMat4("view", view);
-        snakeShader.setVec3("color", snakeColor);
-        snakeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        snakeShader.setVec3("lightPos", lightPos);
-        snakeShader.setVec3("viewPos", camera.getPosition());
+        defaultShader.use();
+        defaultShader.setMat4("projection", projection);
+        defaultShader.setMat4("view", view);
+        defaultShader.setVec3("color", snakeColor);
+        defaultShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        defaultShader.setVec3("lightPos", lightPos);
+        defaultShader.setVec3("viewPos", camera.getPosition());
 
         glm::vec3 deadColor = glm::vec3(0.8f, 0.0f, 0.8f) * glm::vec3(glm::sin(glfwGetTime()));
         if (gameOver)
         {
-            snakeShader.setBool("dead", true);
-            snakeShader.setVec3("deadColor", deadColor);
+            defaultShader.setBool("dead", true);
+            defaultShader.setVec3("deadColor", deadColor);
         }
         else
-            snakeShader.setBool("dead", false);
+            defaultShader.setBool("dead", false);
         
         glBindVertexArray(VAO);
 
         // draw the platform 
-        platformShader.use();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(1.0f));
         model = glm::translate(model, platformLocation);
-        platformShader.setMat4("model", model);
+        defaultShader.setVec3("color", floorColor);
+        defaultShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 36, 18);
-
-        foodShader.use();
-        foodShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
 
         // drawing foods
         float rotation = glm::radians(glfwGetTime() * 4.0f);
+        defaultShader.setVec3("color", foodColor);
 
         for (int i = 0; i < currentFoodAmount; i++)
         {
@@ -352,8 +331,8 @@ int main()
             model = glm::translate(model, foodLocations[i]);
             model = glm::rotate(model, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.13));
-            foodShader.setMat4("model", model);
-            foodShader.setVec3("lightPos", lightPos);
+            defaultShader.setMat4("model", model);
+            defaultShader.setVec3("lightPos", lightPos);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
@@ -362,21 +341,20 @@ int main()
         model = glm::translate(model, lightPos);
         // model = glm::translate(model, snakePos[0] + glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.05f));
-        foodShader.setMat4("model", model);
-        foodShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
-        foodShader.setVec3("lightPos", lightPos);
+        defaultShader.setMat4("model", model);
+        defaultShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+        defaultShader.setVec3("lightPos", lightPos);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // drawing snake 
-        snakeShader.use();
-
+        // drawing snake
+        defaultShader.setVec3("color", snakeColor);
         for (int i = 0; i < numSnakeParts; i++)
         {
             
             model = glm::mat4(1.0f);
             model = glm::translate(model, snakePos[i]);
             model = glm::scale(model, glm::vec3(float(1) / float(3)));
-            snakeShader.setMat4("model", model);
+            defaultShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
         }
@@ -413,7 +391,7 @@ int main()
             snakePos[0].x = glm::clamp(snakePos[0].x, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
             snakePos[0].z = glm::clamp(snakePos[0].z, (float(-platformLength / 2) + 1.0f), (float(platformLength / 2)));
 
-            snakeShader.setVec3("pos", snakePos[0]);
+            defaultShader.setVec3("pos", snakePos[0]);
         }
 
         glfwSwapBuffers(window);
